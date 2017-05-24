@@ -77,14 +77,36 @@ void RBCheck(RBTree *T); // "desenha" a árvore
 bool isRNTree(RBTree *T); // retorna true se T é uma RN tree
 
 int main(int argc, const char * argv[]){
-	if (argc != 2) {
-        cout << "Parameter error. Usage: " << argv[0] << " (input file) " << endl;
-        exit (1);
-    }
+	// if (argc != 2) {
+ //        cout << "Parameter error. Usage: " << argv[0] << " (input file) " << endl;
+ //        exit (1);
+ //    }
     sentinela = alocaElemento("", NULL,NULL,NULL, black); // elemento global para a sentinela da árvore (nó externo)
-    RBElement * root = alocaElemento("Aaaaa", sentinela,sentinela,sentinela, black); // elemento global para a sentinela da árvore (nó externo)
+   	sentinela->pai = sentinela;
+   	sentinela->left = sentinela;
+   	sentinela->right = sentinela;
+    //RBElement * root = alocaElemento("Aaaaa", sentinela,sentinela,sentinela, black); // elemento global para a sentinela da árvore (nó externo)
   	RBTree *T = (RBTree*)malloc(sizeof(RBTree));;
-  	T->root = root;
+  	//T->root = root;
+  	RBElement* n18 = alocaElemento("18", sentinela,sentinela,sentinela, black);
+  	RBElement* n19 = alocaElemento("19", sentinela,sentinela,sentinela, black);
+  	RBElement* n20 = alocaElemento("20", sentinela,sentinela,sentinela, black);
+  	RBElement* n22 = alocaElemento("22", sentinela,sentinela,sentinela, black);
+	T->root = n18;
+	n18->right = n19;
+	n19->pai = n18;
+	n19->right = n22;
+	n22->pai = n19;
+	n22->left = n20;
+	n20->pai=n22;
+	RBCheck(T);
+	Right_Rotate(T, n22);
+	cout<<endl;
+	RBCheck(T);
+	Left_Rotate(T, n19);
+	cout<<endl;
+	RBCheck(T);
+
 }
 
 void Left_Rotate(RBTree *T, RBElement *z){
@@ -127,13 +149,15 @@ void Right_Rotate(RBTree *T, RBElement *y){
 	}
 }
 
-void aux_RBCheck(RBElement *root, ){
-
+void aux_RBCheck(RBElement *root, int nivel){
+	if (root!=NULL && root!=sentinela){
+		aux_RBCheck(root->left, nivel+1);
+		printElement(root, nivel);
+		aux_RBCheck(root->right, nivel+1);
+	}
 }
 void RBCheck(RBTree *T){
 	RBElement *root = T->root;
-	while (root!=sentinela){
-
-	}
+	aux_RBCheck(root, 1);
 }
 
