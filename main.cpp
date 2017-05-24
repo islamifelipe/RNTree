@@ -68,7 +68,7 @@ void RB_Insert_Fixup(RBTree *T, RBElement *z); // mantém as propriedades da ár
 void Right_Rotate(RBTree *T, RBElement *y); // Rotaciona à direita uma subárvore de raiz z
 void Left_Rotate(RBTree *T, RBElement *z); // Rotaciona à esquerda uma subárvore de raiz z
 void RB_Delete(RBTree *T, RBElement *z); // deleta um elemento z de T, mantendo as pripriedades de T
-void RB_Transplant(RBTree *T, RBElement *z, RBElement *y); // ??
+void RB_Transplant(RBTree *T, RBElement *z, RBElement *y); // coloca o elemento y em z
 RBElement *Tree_Minimum(RBTree *T, RBElement *z); // retorna o menor elemento de uma subarvore de raiz z
 void RB_Delete_Fixup(RBTree *T, RBElement *x); //// mantém as propriedades da árvore T, que possivelmente foram violadas pelo nó x
 RBElement * Search(RBTree *T, string c); // busca por uma chave c
@@ -236,3 +236,114 @@ void RB_Insert_Fixup(RBTree *T, RBElement *z){
 	}
 	T->root->color = black;
 }
+
+void RB_Transplant(RBTree *T, RBElement *z, RBElement *y){
+	if (z->pai == sentinela){
+		T->root = y; // caso onde z é raiz. A arvore agora tem somente um elemrento, y
+	} else if (z==z->pai->left){
+		z->pai->left = y;
+	}else {
+		z->pai->right = y;
+	}
+	y->pai = z->pai;
+}
+
+RBElement *Tree_Minimum(RBTree *T, RBElement *z){
+	while (z->right != sentinela){
+		z = z->right;
+	}
+	return z;
+}
+
+void RB_Delete(RBTree *T, RBElement *z){
+	RBElement *y = z;
+	Color corOriginalDeY = y->color;
+	RBElement *x;
+	if (z->left == sentinela){ // se z nao tem filho esquerdo
+		x = z->right;
+		RB_Transplant(T,z,z->right);
+	} else if (z->right == sentinela){ // se z nao tem filho direito
+		x = z->left;
+		RB_Transplant(T, z,z->left);
+	}else{
+		y = Tree_Minimum(T,z->right);
+		corOriginalDeY = y->color;
+		x = y->right;
+		if (y->pai == z){ // DESNECESSARIO
+			x->pai = y;
+		} else {
+			RB_Transplant(T, y, y->right);
+			y->right = z->right;
+			y->right->pai = y;
+		}
+		RB_Transplant(T,z,y);
+		y->left = z->left;
+		y->left->pai = y;
+		y->color = z->color;
+	}
+
+	if(corOriginalDeY == black){
+		RB_Delete_Fixup(T,x);
+	}
+}
+
+void RB_Delete_Fixup(RBTree *T, RBElement *x){
+	while(x != T->root && x->color == black){
+		if (x==x->pai->left){ // x é filho esquerdo
+			RBElement *w = x->pai->right; // tio do double negro
+			if (w->color == red){
+				w->color = black;
+				x->pai->color = red;
+				Left_Rotate(T,x->pai);
+				w = x->pai->right;
+			}
+
+			if (w->left->color == black && w->right->color == black){
+				w->color = red;
+				x = x->pai;
+			} else{
+				if (w->right->color == black){
+					w->left->color = black;
+					w->color = red;
+					Right_Rotate(T,w);
+					w = x->pai->right;
+				}
+				w->color = x->pai->color;
+				x->pai->color = black;
+				w->right->color = black;
+				Left_Rotate(T, x->pai);
+				x = T->root;
+			}
+		} else{// y é filho esquerdo
+
+			RBElement *w = x->pai->left; // tio do double negro
+			if (w->color == red){
+				w->color = black;
+				x->pai->color = red;
+				Right_Rotate(T,x->pai);
+				w = x->pai->left;
+			}
+
+			if (w->right->color == black && w->left->color == black){
+				w->color = red;
+				x = x->pai;
+			} else{
+				if (w->left->color == black){
+					w->right->color = black;
+					w->color = red;
+					Left_Rotate(T,w);
+					w = x->pai->left;
+				}
+				w->color = x->pai->color;
+				x->pai->color = black;
+				w->left->color = black;
+				Right_Rotate(T, x->pai);
+				x = T->root;
+			}
+		}
+	}
+	x->color = black;
+}
+
+
+
