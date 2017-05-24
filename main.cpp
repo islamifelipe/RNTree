@@ -51,7 +51,7 @@ RBElement * alocaElemento(string key, RBElement* pai, RBElement* left, RBElement
 
 void printElement(RBElement *no, int nivel){
 	if (no!=NULL){
-		string color = "vermelhor";
+		string color = "vermelho";
 		if (no->color==black) color="preto";
 		string pai = "NIL", left="NIL", right="NIL";
 		if (no->pai!=NULL && no->pai!=sentinela) pai = no->pai->key;
@@ -64,7 +64,7 @@ void printElement(RBElement *no, int nivel){
 
 
 void RBInsert(RBTree *T, RBElement *z); // insere um elemento z em T
-void RB_Insert_Fixup(RBTree *T, RBElement *x); // mantém as propriedades da árvore T, que possivelmente foram violadas pelo nó x
+void RB_Insert_Fixup(RBTree *T, RBElement *z); // mantém as propriedades da árvore T, que possivelmente foram violadas pelo nó x
 void Right_Rotate(RBTree *T, RBElement *y); // Rotaciona à direita uma subárvore de raiz z
 void Left_Rotate(RBTree *T, RBElement *z); // Rotaciona à esquerda uma subárvore de raiz z
 void RB_Delete(RBTree *T, RBElement *z); // deleta um elemento z de T, mantendo as pripriedades de T
@@ -76,36 +76,47 @@ void RBPrint(RBTree *T); // percurso in ordem
 void RBCheck(RBTree *T); // "desenha" a árvore
 bool isRNTree(RBTree *T); // retorna true se T é uma RN tree
 
+
 int main(int argc, const char * argv[]){
 	// if (argc != 2) {
  //        cout << "Parameter error. Usage: " << argv[0] << " (input file) " << endl;
  //        exit (1);
  //    }
-    sentinela = alocaElemento("", NULL,NULL,NULL, black); // elemento global para a sentinela da árvore (nó externo)
+	sentinela = alocaElemento("", NULL,NULL,NULL, black); // elemento global para a sentinela da árvore (nó externo)
    	sentinela->pai = sentinela;
    	sentinela->left = sentinela;
    	sentinela->right = sentinela;
     //RBElement * root = alocaElemento("Aaaaa", sentinela,sentinela,sentinela, black); // elemento global para a sentinela da árvore (nó externo)
   	RBTree *T = (RBTree*)malloc(sizeof(RBTree));;
+  	T->root=sentinela;
   	//T->root = root;
-  	RBElement* n18 = alocaElemento("18", sentinela,sentinela,sentinela, black);
-  	RBElement* n19 = alocaElemento("19", sentinela,sentinela,sentinela, black);
-  	RBElement* n20 = alocaElemento("20", sentinela,sentinela,sentinela, black);
-  	RBElement* n22 = alocaElemento("22", sentinela,sentinela,sentinela, black);
-	T->root = n18;
-	n18->right = n19;
-	n19->pai = n18;
-	n19->right = n22;
-	n22->pai = n19;
-	n22->left = n20;
-	n20->pai=n22;
+  	RBElement* n41 = alocaElemento("41", sentinela,sentinela,sentinela, red);
+  	RBElement* n38 = alocaElemento("38", sentinela,sentinela,sentinela, red);
+  	RBElement* n31 = alocaElemento("31", sentinela,sentinela,sentinela, red);
+  	RBElement* n12 = alocaElemento("12", sentinela,sentinela,sentinela, red);
+	RBElement* n19 = alocaElemento("19", sentinela,sentinela,sentinela, red);
+	RBElement* n8 = alocaElemento("8", sentinela,sentinela,sentinela, red);
+	
+	cout<<"Primeira insersao: "<<endl;
+	RBInsert(T,n41);
 	RBCheck(T);
-	Right_Rotate(T, n22);
+	cout<<"Segunda insersao: "<<endl;
+	RBInsert(T,n38);
+	RBCheck(T);
+	cout<<"Terceira insersao: "<<endl;
+	RBInsert(T,n31);
+	RBCheck(T);
 	cout<<endl;
+	RBInsert(T,n12);
 	RBCheck(T);
-	Left_Rotate(T, n19);
 	cout<<endl;
+	RBInsert(T,n19);
 	RBCheck(T);
+	cout<<endl;
+	RBInsert(T,n8);
+	RBCheck(T);
+	cout<<endl;
+
 
 }
 
@@ -161,3 +172,67 @@ void RBCheck(RBTree *T){
 	aux_RBCheck(root, 1);
 }
 
+void RBInsert(RBTree *T, RBElement *z){
+	RBElement * y = sentinela;
+	RBElement * x = T->root; // elemento corrente
+	while (x != sentinela){ // busca pela posicao correta de insersao
+		y = x; // pai do elemento corrente
+		if (z->key < x->key){
+			x = x->left;
+		}else{
+			x = x->right;
+		}
+	}
+	z->pai = y; // atribui o pai do novo elemento
+	if(y==sentinela){
+		T->root = z; // se a arvore é vazia, coloca-se a raiz (inicialmente)
+	} else if (z->key < y->key){ // o novo elemento é menor
+		y->left = z; // insere na esquerda
+	} else { // maior
+		y->right = z; // insere na direita
+	}
+	z->left = sentinela;
+	z->right = sentinela;
+	z->color = red; // cor vermelha para o novo elemento
+	RB_Insert_Fixup(T,z); // reajusta a arvore
+}
+void RB_Insert_Fixup(RBTree *T, RBElement *z){
+	while (z->pai->color == red){
+		if (z->pai == z->pai->pai->left){ // o pai de z é fiho esquerdo
+			RBElement *y = z->pai->pai->right; // tio
+			if (y->color == red){ // se o tio é vermeho
+				z->pai->color = black;
+				y->color = black;
+				z->pai->pai->color = red;
+				z = z->pai->pai; // z agora é avô
+			} else {
+				if (z==z->pai->right){
+					z = z->pai;
+					Left_Rotate(T,z);
+				}
+				z->pai->color = black;
+				z->pai->pai->color = red;
+				Right_Rotate(T,z->pai->pai);
+			}
+
+		} else { // o pai de z é fiho direito
+
+			RBElement *y = z->pai->pai->left; // tio esquerdo
+			if (y->color == red){ // se o tio é vermeho
+				z->pai->color = black;
+				y->color = black;
+				z->pai->pai->color = red;
+				z = z->pai->pai; // z agora é avô
+			} else {
+				if (z==z->pai->left){
+					z = z->pai;
+					Right_Rotate(T,z);
+				}
+				z->pai->color = black;
+				z->pai->pai->color = red;
+				Left_Rotate(T,z->pai->pai);
+			}
+		}
+	}
+	T->root->color = black;
+}
