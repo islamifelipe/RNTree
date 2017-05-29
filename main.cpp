@@ -100,6 +100,7 @@ int main(int argc, const char * argv[]){
 	cout<<"Primeira insersao: "<<endl;
 	RBInsert(T,n41);
 	RBCheck(T);
+	RBInsert(T,n41);
 	cout<<"Segunda insersao: "<<endl;
 	RBInsert(T,n38);
 	RBCheck(T);
@@ -118,33 +119,38 @@ int main(int argc, const char * argv[]){
 	cout<<endl;
 
 	cout<<"\nDelete 8:"<<endl;
-	RB_Delete(T,n8);
-	RBCheck(T);
+	RBElement * dell = Search(T, "08");
+	if (dell !=sentinela) RB_Delete(T,dell);
+	cout<<endl;
+
+	cout<<"\nDelete 8:"<<endl;
+	dell = Search(T, "08");
+	if (dell !=sentinela) RB_Delete(T,dell);
 	cout<<endl;
 
 	cout<<"\nDelete 12:"<<endl;
-	RB_Delete(T,n12);
-	RBCheck(T);
+	dell = Search(T, "12");
+	if (dell !=sentinela) RB_Delete(T,dell);
 	cout<<endl;
 
 	cout<<"\nDelete 19:"<<endl;
-	RB_Delete(T,n19);
-	RBCheck(T);
+	dell = Search(T, "19");
+	if (dell !=sentinela) RB_Delete(T,dell);
 	cout<<endl;
 
 	cout<<"\nDelete 31:"<<endl;
-	RB_Delete(T,n31);
-	RBCheck(T);
+	dell = Search(T, "31");
+	if (dell !=sentinela) RB_Delete(T,dell);
 	cout<<endl;
 
 	cout<<"\nDelete 38:"<<endl;
-	RB_Delete(T,n38);
-	RBCheck(T);
+	dell = Search(T, "38");
+	if (dell !=sentinela) RB_Delete(T,dell);
 	cout<<endl;
 
 	cout<<"\nDelete 41:"<<endl;
-	RB_Delete(T,n41);
-	RBCheck(T);
+	dell = Search(T, "41");
+	if (dell !=sentinela) RB_Delete(T,dell);
 	cout<<endl;
 
 }
@@ -189,28 +195,37 @@ void Right_Rotate(RBTree *T, RBElement *y){
 	}
 }
 
-void aux_RBCheck(RBElement *root, int nivel){
+void aux_RBCheck(RBElement *root, int nivel, bool nodeOrKey){
 	if (root!=NULL && root!=sentinela){
-		aux_RBCheck(root->left, nivel+1);
-		printElement(root, nivel);
-		aux_RBCheck(root->right, nivel+1);
+		aux_RBCheck(root->left, nivel+1, nodeOrKey);
+		if(nodeOrKey == true){
+			printElement(root, nivel); // print node 
+		}
+		else { // print key
+			cout<<root->key<<" ";
+		}	
+		aux_RBCheck(root->right, nivel+1, nodeOrKey);
 	}
 }
 void RBCheck(RBTree *T){
 	RBElement *root = T->root;
-	aux_RBCheck(root, 1);
+	aux_RBCheck(root, 1, true);
 }
 
 void RBInsert(RBTree *T, RBElement *z){
 	RBElement * y = sentinela;
 	RBElement * x = T->root; // elemento corrente
-	while (x != sentinela){ // busca pela posicao correta de insersao
+	while (x != sentinela && x->key != z->key){ // busca pela posicao correta de insersao
 		y = x; // pai do elemento corrente
 		if (z->key < x->key){
 			x = x->left;
 		}else{
 			x = x->right;
 		}
+	}
+	if (x->key == z->key){
+		cout<<"Essa chave ja existe!!!"<<endl;
+		//free(z);
 	}
 	z->pai = y; // atribui o pai do novo elemento
 	if(y==sentinela){
@@ -314,6 +329,10 @@ void RB_Delete(RBTree *T, RBElement *z){
 	if(corOriginalDeY == black){
 		RB_Delete_Fixup(T,x);
 	}
+
+	RBPrint(T);
+	cout<<endl;
+	RBCheck(T);
 }
 
 void RB_Delete_Fixup(RBTree *T, RBElement *x){
@@ -374,5 +393,23 @@ void RB_Delete_Fixup(RBTree *T, RBElement *x){
 	x->color = black;
 }
 
+void RBPrint(RBTree *T){
+	RBElement *root = T->root;
+	aux_RBCheck(root, 1, false);
+}
 
+RBElement * Search(RBTree *T, string c){
+	RBElement *root = T->root;
+	while (root!=sentinela && root->key!=c){
+		if (c<root->key){
+			root = root->left;
+		} else {
+			root = root->right;
+		}
+	}
+	if (root==sentinela){
+		cout<<"Chave nao encontrada!"<<endl;
+	} 
+	return root; // c ou sentinela
+}
 
