@@ -95,7 +95,7 @@ int main(int argc, const char * argv[]){
   	RBElement* n31 = alocaElemento("31", sentinela,sentinela,sentinela, red);
   	RBElement* n12 = alocaElemento("12", sentinela,sentinela,sentinela, red);
 	RBElement* n19 = alocaElemento("19", sentinela,sentinela,sentinela, red);
-	RBElement* n8 = alocaElemento("8", sentinela,sentinela,sentinela, red);
+	RBElement* n8  = alocaElemento("08", sentinela,sentinela,sentinela, red);
 	
 	cout<<"Primeira insersao: "<<endl;
 	RBInsert(T,n41);
@@ -117,6 +117,35 @@ int main(int argc, const char * argv[]){
 	RBCheck(T);
 	cout<<endl;
 
+	cout<<"\nDelete 8:"<<endl;
+	RB_Delete(T,n8);
+	RBCheck(T);
+	cout<<endl;
+
+	cout<<"\nDelete 12:"<<endl;
+	RB_Delete(T,n12);
+	RBCheck(T);
+	cout<<endl;
+
+	cout<<"\nDelete 19:"<<endl;
+	RB_Delete(T,n19);
+	RBCheck(T);
+	cout<<endl;
+
+	cout<<"\nDelete 31:"<<endl;
+	RB_Delete(T,n31);
+	RBCheck(T);
+	cout<<endl;
+
+	cout<<"\nDelete 38:"<<endl;
+	RB_Delete(T,n38);
+	RBCheck(T);
+	cout<<endl;
+
+	cout<<"\nDelete 41:"<<endl;
+	RB_Delete(T,n41);
+	RBCheck(T);
+	cout<<endl;
 
 }
 
@@ -239,7 +268,7 @@ void RB_Insert_Fixup(RBTree *T, RBElement *z){
 
 void RB_Transplant(RBTree *T, RBElement *z, RBElement *y){
 	if (z->pai == sentinela){
-		T->root = y; // caso onde z é raiz. A arvore agora tem somente um elemrento, y
+		T->root = y; // caso onde z seja a raiz. A arvore agora tem somente um elemrento, y
 	} else if (z==z->pai->left){
 		z->pai->left = y;
 	}else {
