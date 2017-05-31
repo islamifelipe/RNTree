@@ -99,10 +99,10 @@ int main(int argc, const char * argv[]){
   	if (arquivo.is_open()){
   		while (arquivo>>chave){
   			arquivo>>cod;
-  			if (chave != ""){
+  			if (chave != "" && chave != "1" && chave != "0"){
 	  			if (cod == 1){ // insere
 					RBElement* novo = alocaElemento(chave, sentinela,sentinela,sentinela, red);
-	  				RBInsert(T,novo);
+	  				RBInsert(T,novo); // se o no ja existir, o novo é deletado pelo proprio procedimento de insert
 	  			} else if (cod==0){
 	  				RBElement *resl =  Search(T, chave);
 	  				if (resl!=sentinela){

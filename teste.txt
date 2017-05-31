@@ -15,4 +15,5 @@ fulano 0
 otario 1
 natal 1
 fulano 0
-   0
+   1
+balbla 0
