@@ -9,7 +9,7 @@
 */
 
 
-#include <iostream>
+
 #include <stdio.h> 
 #include <map> 
 #include <list>
@@ -18,6 +18,8 @@
 #include <cmath>
 #include <stack>   
 #include <utility>      // std::pair
+#include <iostream>
+#include <fstream>
 using namespace std;
 
 
@@ -78,19 +80,46 @@ bool isRNTree(RBTree *T); // retorna true se T é uma RN tree
 
 
 int main(int argc, const char * argv[]){
-	// if (argc != 2) {
- //        cout << "Parameter error. Usage: " << argv[0] << " (input file) " << endl;
- //        exit (1);
- //    }
+	if (argc != 2) {
+        cout << "Parameter error. Usage: " << argv[0] << " input file " << endl;
+        exit (1);
+    }
 	sentinela = alocaElemento("", NULL,NULL,NULL, black); // elemento global para a sentinela da árvore (nó externo)
    	sentinela->pai = sentinela;
    	sentinela->left = sentinela;
    	sentinela->right = sentinela;
-    //RBElement * root = alocaElemento("Aaaaa", sentinela,sentinela,sentinela, black); // elemento global para a sentinela da árvore (nó externo)
-  	RBTree *T = (RBTree*)malloc(sizeof(RBTree));;
+    
+    RBTree *T = (RBTree*)malloc(sizeof(RBTree));;
   	T->root=sentinela;
-  	//T->root = root;
-  	RBElement* n41 = alocaElemento("41", sentinela,sentinela,sentinela, red);
+
+  	string chave;
+  	int cod;
+
+  	ifstream arquivo(argv[1]);
+  	if (arquivo.is_open()){
+  		while (arquivo>>chave){
+  			arquivo>>cod;
+  			if (chave != ""){
+	  			if (cod == 1){ // insere
+					RBElement* novo = alocaElemento(chave, sentinela,sentinela,sentinela, red);
+	  				RBInsert(T,novo);
+	  			} else if (cod==0){
+	  				RBElement *resl =  Search(T, chave);
+	  				if (resl!=sentinela){
+	  					RB_Delete(T, resl);
+	  				}
+	  			}
+	  		} else{
+	  			RBPrint(T);
+				cout<<endl;
+				RBCheck(T);
+				break;
+	  		}
+  		}
+
+  	}
+  	
+  	/*RBElement* n41 = alocaElemento("41", sentinela,sentinela,sentinela, red);
   	RBElement* n38 = alocaElemento("38", sentinela,sentinela,sentinela, red);
   	RBElement* n31 = alocaElemento("31", sentinela,sentinela,sentinela, red);
   	RBElement* n12 = alocaElemento("12", sentinela,sentinela,sentinela, red);
@@ -152,6 +181,7 @@ int main(int argc, const char * argv[]){
 	dell = Search(T, "41");
 	if (dell !=sentinela) RB_Delete(T,dell);
 	cout<<endl;
+*/
 
 }
 
@@ -224,8 +254,9 @@ void RBInsert(RBTree *T, RBElement *z){
 		}
 	}
 	if (x->key == z->key){
-		cout<<"Essa chave ja existe!!!"<<endl;
-		//free(z);
+		cout<<z->key<< " : essa chave ja existe!!!"<<endl;
+		free(z);
+		return;
 	}
 	z->pai = y; // atribui o pai do novo elemento
 	if(y==sentinela){
@@ -408,7 +439,7 @@ RBElement * Search(RBTree *T, string c){
 		}
 	}
 	if (root==sentinela){
-		cout<<"Chave nao encontrada!"<<endl;
+		cout<< c <<" : chave nao encontrada!"<<endl;
 	} 
 	return root; // c ou sentinela
 }
