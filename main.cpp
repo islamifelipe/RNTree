@@ -106,16 +106,17 @@ int main(int argc, const char * argv[]){
 	  			} else if (cod==0){
 	  				RBElement *resl =  Search(T, chave);
 	  				if (resl!=sentinela){
+	  					cout<<"Removendo a palavra "<<chave<<endl;
 	  					RB_Delete(T, resl);
 	  				}
 	  			}
 	  		} else{
-	  			RBPrint(T);
-				cout<<endl;
-				RBCheck(T);
 				break;
 	  		}
   		}
+  		RBPrint(T);
+		cout<<endl;
+		RBCheck(T);
 
   	}
   	
@@ -225,21 +226,43 @@ void Right_Rotate(RBTree *T, RBElement *y){
 	}
 }
 
-void aux_RBCheck(RBElement *root, int nivel, bool nodeOrKey){
+int calculaAlturaNegra(RBElement *root){
 	if (root!=NULL && root!=sentinela){
-		aux_RBCheck(root->left, nivel+1, nodeOrKey);
-		if(nodeOrKey == true){
-			printElement(root, nivel); // print node 
+		if (root->color==black){
+			return calculaAlturaNegra(root->left) + 1;
+		} else {
+			return calculaAlturaNegra(root->left);
 		}
-		else { // print key
-			cout<<root->key<<" ";
-		}	
-		aux_RBCheck(root->right, nivel+1, nodeOrKey);
+	} else {
+		return 1;
+	}
+}
+
+void aux_RBCheck(RBElement *root, int alturanegra){
+	if (root!=NULL && root!=sentinela){
+		printElement(root, alturanegra); // print node 
+		if (root->left != NULL && root->color == root->left->color){
+			aux_RBCheck(root->left, alturanegra-1);
+		} else if (root->left != NULL && root->left->color==black){
+			aux_RBCheck(root->left, alturanegra-1);
+		} else{
+			aux_RBCheck(root->left, alturanegra);
+		}
+
+		if (root->right != NULL && root->color == root->right->color){
+			aux_RBCheck(root->right, alturanegra-1);
+		} else if (root->right != NULL && root->right->color==black){
+			aux_RBCheck(root->right, alturanegra-1);
+		} else{
+			aux_RBCheck(root->right, alturanegra);
+		}
 	}
 }
 void RBCheck(RBTree *T){
 	RBElement *root = T->root;
-	aux_RBCheck(root, 1, true);
+	int altura = calculaAlturaNegra(root)-1;
+	
+	aux_RBCheck(root, altura);
 }
 
 void RBInsert(RBTree *T, RBElement *z){
@@ -424,9 +447,16 @@ void RB_Delete_Fixup(RBTree *T, RBElement *x){
 	x->color = black;
 }
 
-void RBPrint(RBTree *T){
+void aux_print(RBElement* root){ // in ordem
+	if (root!=NULL && root!=sentinela){
+		aux_print(root->left);
+		cout<<root->key<<", ";
+		aux_print(root->right);
+	}
+}
+void RBPrint(RBTree *T){ // mostra na ordem (in ordem)
 	RBElement *root = T->root;
-	aux_RBCheck(root, 1, false);
+	aux_print(root);
 }
 
 RBElement * Search(RBTree *T, string c){
@@ -439,7 +469,7 @@ RBElement * Search(RBTree *T, string c){
 		}
 	}
 	if (root==sentinela){
-		cout<< c <<" : chave nao encontrada!"<<endl;
+		cout<<"A palavra " << c <<" foi removida anteriormente ou nao foi inserida!"<<endl;
 	} 
 	return root; // c ou sentinela
 }
